@@ -1,122 +1,209 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
+import { useEffect, useState } from 'react'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [name, setName] = useState("");
+  const [motive, setMotive] = useState("");
+  const [priority, setPriority] = useState(false);
+
+  const [fila, setFila] = useState (() => {
+    const filaSalva = localStorage.getItem("fila-atendimento");
+
+    return filaSalva ? JSON.parse(filaSalva) : [];
+  });
+
+  useEffect (() => {
+    localStorage.setItem("fila-atendimento", JSON.stringify(fila));
+  }, [fila]);
+
+  function gerarSenha() {
+    const numero = fila.lenght + 1;
+
+    return priority 
+    ? `P${string(numero).padStart(3, "0")}`
+    : `A${string(numero).padStart(3, "0")}`;
+  }
+
+  function enterFila(event) {
+    event.preventDefault();
+
+    if (!name.trim()) {
+      alert("Digite seu nome!");
+      return
+    }
+
+    if (!motive.trim()) {
+      alert("Informe o motivo do atendimento.");
+      return
+    }
+
+    const newPerson = {
+      id : Date.now(),
+      senha : gerarSenha(),
+      nome : name.trim(),
+      motivo : motive.trim(),
+      prioritario,
+      horario: new Date().toLocaleTimeString("pt-BR", {
+        hour: "2-digit",
+        minut: "2-digit"
+      }),
+    };
+
+    setFila((filaAtual) => [...filaAtual, newPerson]);
+
+    setName("");
+    setMotive("");
+    setPriority(false);
+
+  }
+
+  function removeFila(id) {
+    setFila((filaAtual) => 
+      filaAtual.filter((pessoa) => pessoa.id !== id)
+    );
+  }
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
+    <div className="app">
+
+      {/* CABEÇALHO*/}
+      <header className="header">
+        <div className="header-content">
+          <div>
+            <span className="instituicao">UNISAGRADO</span>
+
+            <h1>Secretaria · Fila de atendimento</h1>
+          </div>
         </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
+      </header>
+      
+      <main className="container">
+        {/*FORMULÁRIO*/}
+        <section className="card">
+
+          <h2>Retire sua senha</h2>
+
+          <p className="descricao">
+            preencha seus dados e acompanhe a fila pelo celular
           </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
 
-      <div className="ticks"></div>
+          <form onSubmit={enterFila}>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+            {/*NOME*/}
+            <div className="campo">
+              <label htmlFor="nome">
+                Seu nome
+              </label>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+              <input
+              id="nome"
+              type="text"
+              placeholder="Nome completo"
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+              />
+            </div>
+
+            {/*MOTIVO*/}
+            <div className="campo">
+              <label htmlFor="motivo">
+                Qual o motivo do atendimento
+              </label>
+
+              <textarea
+              id="motivo"
+              placeholder="Ex.: solicitar hisórico escolar"
+              value={motive}
+              onChange={(event) => setMotivo(event.tager.value)}
+              rows="4"
+              />
+            </div>
+
+            {/*PRIORIDADE*/}
+            <div
+              className={`prioridade ${
+                priority ? "prioridade-ativa" : ""
+              }`}>
+              <div>
+                <strong>Atendimento preferencial</strong>
+
+                <p>
+                  Idosos, gestantes, pessoas com deficiência
+                  ou com criança de colo.
+                </p>
+              </div>
+              <div
+                className={`switch ${
+                priority ? "switch-ativo" : ""
+                }`}>
+                <div className="switch-bolinha"></div>
+              </div>
+            </div>
+
+            {/*BOTÃO*/}
+            <button type="submit" className="botao">
+              Entrar na fila
+            </button>
+
+          </form>
+        </section>
+
+        {/*FILA*/}
+        <section className="fila-section">
+          <h2 className="titulo-fila">
+            FILA DE HOJE
+          </h2>
+
+          {fila.length === 0 ? (
+            <div className="fila-vazia">
+              Nenhuma pessoa aguardando no momento.
+            </div>
+            ) : (
+              <div className="fila">
+
+                {fila.map((pessoa, index) => (
+                  <div
+                    className={`pessoa ${
+                      pessoa.priority
+                      ? "pessoa-prioritaria"
+                      : ""
+                    }`}
+                    key={pessoa.id}>
+                      
+                      <div className="numero">
+                    <span>{pessoa.senha}</span>
+                  </div>
+
+                  <div className="dados">
+                    <strong>{pessoa.nome}</strong>
+
+                    <span>{pessoa.motivo}</span>
+
+                    <small>
+                      Entrada: {pessoa.horario}
+                    </small>
+
+                    {pessoa.prioritario && (
+                      <span className="badge">
+                        Atendimento preferencial
+                      </span>
+                    )}
+                  </div>
+
+                  <button
+                    className="remover"
+                    onClick={() => removerDaFila(pessoa.id)}
+                    title="Remover da fila"
+                  >
+                    ×
+                  </button>
+                </div>
+    
+        </section>
+      </main>
+  </div>
+   
+     
   )
-}
-
-export default App
+};
+export default App;
