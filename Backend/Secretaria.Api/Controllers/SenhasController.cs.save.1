@@ -1,0 +1,162 @@
+using Microsoft.AspNetCore.Mvc;
+using Npgsql;
+using Secretaria.Api.DTOs;
+using Microsoft.AspNetCore.Mvc;
+using Npgsql;
+using Secretaria.Api.DTOs;
+
+namespace Secretaria.Api.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class SenhasController : ControllerBase
+{
+    private readonly NpgsqlDataSource _dataSource;
+
+    public SenhasController(NpgsqlDataSource dataSource)
+    {
+        _dataSource = dataSource;
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> SolicitarSenha(
+        [FromBody] SolicitarSenhaDto dto)
+    {
+        if (string.IsNullOrWhiteSpace(dto.Nome))
+        {
+            return BadRequest(new
+            {
+                mensagem = "O nome é obrigatório."
+            });
+        }
+
+        if (string.IsNullOrWhiteSpace(dto.Descricao))
+        {
+            return BadRequest(new
+            {
+                mensagem = "A descrição do problema é obrigatória."
+            });
+        }
+
+        await using var command = _dataSource.CreateCommand(
+            """
+            SELECT *
+            FROM solicitar_senha($1, $2, $3);
+            """
+        );
+
+        command.Parameters.AddWithValue(dto.Nome);
+        command.Parameters.AddWithValue(dto.Descricao);
+        command.Parameters.AddWithValue(dto.Preferencial);
+
+        await using var reader = await command.ExecuteReaderAsync();
+
+        if (!await reader.ReadAsync())
+        {
+            return StatusCode(500, new
+            {
+                mensagem = "Não foi possível gerar a senha."
+            });
+        }
+
+        return Ok(new
+        {
+            codigo = reader["codigo"]?.ToString(),
+            numero = Convert.ToInt32(reader["numero"]),
+            preferencial = Convert.ToBoolean(reader["preferencial"]),
+            status = reader["status"]?.ToString()
+        });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> ListarSenhas()
+    {
+        await using var command = _dataSource.CreateCommand(
+            """
+            SELECT
+                irigatória."
+            });
+        }
+
+        await using var command = _dataSource.CreateCommand(
+            """
+            SELECT *
+            FROM solicitar_senha($1, $2, $3);
+            """
+        );
+
+        command.Parameters.AddWithValue(dto.Nome);
+        command.Parameters.AddWithValue(dto.Descricao);
+        command.Parameters.AddWithValue(dto.Preferencial);
+
+        await using var reader = await command.ExecuteReaderAsync();
+
+        if (!await reader.ReadAsync())
+        {
+            return StatusCode(500, new
+            {
+                mensagem = "Não foi possível gerar a senha."
+            });
+        }
+
+        var codigo = reader["codigo"]?.ToString();
+        var numero = Convert.ToInt32(reader["numero"]);
+        var preferencial = Convert.ToBoolean(reader["preferencial"]);
+        var status = reader["status"]?.ToString();
+
+        return Ok(new
+        {
+            codigo,
+            numero,
+            preferencial,
+            status
+        });
+    }
+}
+
+using Microsoft.AspNetCore.Mvc;
+using Npgsql;
+using Secretaria.Api.DTOs;
+
+namespace Secretaria.Api.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class SenhasController : ControllerBase
+{
+    private readonly NpgsqlDataSource _dataSource;
+
+    public SenhasController(NpgsqlDataSource dataSource)
+    {
+        _dataSource = dataSource;
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> SolicitarSenha(
+        [FromBody] SolicitarSenhaDto dto)
+    {
+        if (string.IsNullOrWhiteSpace(dto.Nome))
+        {
+            return BadRequest(new
+            {
+                mensagem = "O nome é obrigatório."
+            });
+        }
+
+        if (string.IsNullOrWhiteSpace(dto.Descricao))
+        {
+            return BadRequest(new
+            {
+                mensagem = "A descrição do problema é obrigatória."
+            });
+        }
+
+        await using var command = _dataSource.CreateCommand(
+            """
+            SELECT *
+            FROM solicitar_senha($1, $2, $3);
+            """
+        );
+
+        command.Parameters.AddWithValue(dto.Nome);
+   

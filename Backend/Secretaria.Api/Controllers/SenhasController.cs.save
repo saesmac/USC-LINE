@@ -1,0 +1,113 @@
+using Microsoft.AspNetCore.Mvc;
+using Npgsql;
+using Secretaria.Api.DTOs;
+
+namespace Secretaria.Api.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class SenhasController : ControllerBase
+{
+    private readonly NpgsqlDataSource _dataSource;
+
+    public SenhasController(NpgsqlDataSource dataSource)
+    {
+        _dataSource = dataSource;
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> SolicitarSenha(
+        [FromBody] SolicitarSenhaDto dto)
+    {
+        if (string.IsNullOrWhiteSpace(dto.Nome))
+        {
+            return BadRequest(new
+            {
+                mensagem = "O nome é obrigatório."
+            });
+        }
+
+        if (string.IsNullOrWhiteSpace(dto.Descricao))
+        {
+            return BadRequest(new
+            {
+                mensagem = "A descrição do problema é obrigatória."
+            });
+        }
+
+        await using var command = _dataSource.CreateCommand(
+            """
+            SELECT *
+            FROM solicitar_senha($1, $2, $3);
+            """
+        );
+
+        command.Parameters.AddWithValue(dto.Nome);
+        command.Parameters.AddWithValue(dto.Descricao);
+        command.Parameters.AddWithValue(dto.Preferencial);
+
+        await using var reader = await command.ExecuteReaderAsync();
+
+        if (!await reader.ReadAsync())
+        {
+            return StatusCode(500, new
+            {
+                mensagem = "Não foi possível gerar a senha."
+            });
+        }
+
+        return Ok(new
+        {
+            codigo = reader["codigo"]?.ToString(),
+            numero = Convert.ToInt32(reader["numero"]),
+            preferencial = Convert.ToBoolean(reader["preferencial"]),
+            status = reader["status"]?.ToString()
+        });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> ListarSenhas()
+    {
+        await using var command = _dataSource.CreateCommand(
+            """
+            SELECT
+                id,
+                codigo,
+                numero,
+                nome,
+                descricao,
+                preferencial,
+                status,
+                data_fila,
+                created_at
+            FROM tickets
+            WHERE status = 'AGUARDANDO'
+            ORDER BY
+                preferencial DESC,
+                created_at ASC;
+            """
+        );
+
+        await using var reader = await command.ExecuteReaderAsync();
+
+        var senhas = new List<object>();
+
+        while (await reader.ReadAsync())
+        {
+            senhas.Add(new
+            {
+                id = reader["id"],
+                codigo = reader["codigo"]?.ToString(),
+                numero = Convert.ToInt32(reader["numero"]),
+                nome = reader["nome"]?.ToString(),
+                descricao = reader["descricao"]?.ToString(),
+                preferencial = Convert.ToBoolean(reader["preferencial"]),
+                status = reader["status"]?.ToString(),
+                dataFila = reader["data_fila"],
+                criadoEm = reader["created_at"]
+            });
+        }
+
+        return Ok(senhas);
+    }
+}
