@@ -49,12 +49,31 @@ builder.Services.AddSingleton<NpgsqlDataSource>(_ =>
     return NpgsqlDataSource.Create(connectionString);
 });
 
+
+// Permite acesso pelo site dos alunos publicado na Vercel
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("SiteAlunos", policy =>
+    {
+        policy.WithOrigins(
+                "https://usc-line.vercel.app",
+                "https://unisagrado-alunos.vercel.app",
+                "https://unisagrado-alunos-git-front-koi-analytics.vercel.app"
+            )
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
+
+app.UseRouting();
+app.UseCors("SiteAlunos");
 
 app.MapControllers();
 
