@@ -1,0 +1,12 @@
+/workspaces/USC-LINE/backend/Backend/Secretaria.Api/bin/Release/net10.0/publish/Secretaria.Api
+/workspaces/USC-LINE/backend/Backend/Secretaria.Api/bin/Release/net10.0/publish/appsettings.Development.json
+/workspaces/USC-LINE/backend/Backend/Secretaria.Api/bin/Release/net10.0/publish/appsettings.json
+/workspaces/USC-LINE/backend/Backend/Secretaria.Api/bin/Release/net10.0/publish/Secretaria.Api.dll
+/workspaces/USC-LINE/backend/Backend/Secretaria.Api/bin/Release/net10.0/publish/Secretaria.Api.deps.json
+/workspaces/USC-LINE/backend/Backend/Secretaria.Api/bin/Release/net10.0/publish/Secretaria.Api.runtimeconfig.json
+/workspaces/USC-LINE/backend/Backend/Secretaria.Api/bin/Release/net10.0/publish/Secretaria.Api.pdb
+/workspaces/USC-LINE/backend/Backend/Secretaria.Api/bin/Release/net10.0/publish/DotNetEnv.dll
+/workspaces/USC-LINE/backend/Backend/Secretaria.Api/bin/Release/net10.0/publish/Microsoft.AspNetCore.OpenApi.dll
+/workspaces/USC-LINE/backend/Backend/Secretaria.Api/bin/Release/net10.0/publish/Microsoft.OpenApi.dll
+/workspaces/USC-LINE/backend/Backend/Secretaria.Api/bin/Release/net10.0/publish/Npgsql.dll
+/workspaces/USC-LINE/backend/Backend/Secretaria.Api/bin/Release/net10.0/publish/Superpower.dll

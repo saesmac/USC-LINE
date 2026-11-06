@@ -12,8 +12,12 @@ builder.Configuration.AddEnvironmentVariables();
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
-var connectionString = builder.Configuration.GetConnectionString("Supabase")
-    ?? Environment.GetEnvironmentVariable("SUPABASE_CONNECTION_STRING");
+var connectionString = builder.Configuration.GetConnectionString("Supabase");
+
+if (string.IsNullOrWhiteSpace(connectionString))
+{
+    connectionString = Environment.GetEnvironmentVariable("SUPABASE_CONNECTION_STRING");
+}
 
 if (string.IsNullOrWhiteSpace(connectionString))
 {
