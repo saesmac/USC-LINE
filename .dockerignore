@@ -1,0 +1,10 @@
+**/bin/
+**/obj/
+**/node_modules/
+**/.env
+**/.env.*
+**/appsettings.Development.json
+.git/
+.github/
+usc_line/
+*.zip
